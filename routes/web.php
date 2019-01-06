@@ -20,3 +20,4 @@ Route::get('internet', 'InternetStatusController@index')->middleware('auth');
 
 Auth::routes();
 
+Route::resource('milestones', 'MilestonesController');
