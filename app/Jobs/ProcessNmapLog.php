@@ -1,16 +1,37 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Jobs;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\PingPong;
 use Carbon\Carbon;
+use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 
-class InternetStatusController extends Controller
+class ProcessNmapLog implements ShouldQueue
 {
-    public function index()
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        $withData = request()->has('full');
+        //
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return void
+     */
+    public function handle()
+    {
         $log = Storage::get('nmap.log');
         $groups = [30,60,120,1440,10080];
         $pattern = '/(?:Nmap done at (.*?) --)\h+1 IP address \((\d) hosts? (?:up|down)\)/';
@@ -48,29 +69,19 @@ class InternetStatusController extends Controller
                         $r['down'] += 1;
                         $lastDown = $ts;
                     }
-                    if ($withData) {
-                        $r['data'][$parts[1]] = $parts[2];
-                    }
+
+                    // Log to the database
+                    PingPong::updateOrCreate([
+                        'created_at' => $ts,
+                        'source' => 'external',
+                        'is_successful' => $parts[2],
+                    ]);
                 }
             }
             $r['uptimePct'] = round(($r['up'] / $r['num']) * 100, 2);
             $results[$g] = $r;
         }
-
-        $status['upFor'] = $oldestLog->diffForHumans(null, true);
-        $status['downFor'] = $oldestLog->diffForHumans(null, true);
-
-        if ($lastDown) {
-            $status['upFor'] = $lastDown->diffForHumans(null, true);
-        }
-        if ($lastUp) {
-            $status['downFor'] = $lastUp->diffForHumans(null, true);
-        }
-
-        return view('internet', [
-            'data' => $results,
-            'status' => $status,
-        ]);
+        dump($results);
     }
 
     public function getMostRecentStatus($log, $pattern)
