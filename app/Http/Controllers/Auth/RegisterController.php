@@ -49,7 +49,9 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
+        return Validator::make(
+            $data,
+            [
             'name' => 'required|string|max:255',
             'email' => [
               'required',
@@ -57,17 +59,14 @@ class RegisterController extends Controller
               'email',
               'max:255',
               'unique:users',
-              Rule::in([
-                'amanda.bathman@gmail.com', 
-                'bathmanfamily@gmail.com',
-                'jakebathman@gmail.com'
-            ]),
+              Rule::in(explode(',', config('auth.registration_whitelist'))),
               ],
             'password' => 'required|string|min:6|confirmed',
-          ],
-          [
+            ],
+            [
             'in' => "That :attribute doesn't belong to the Bathman family.",
-          ]);
+            ]
+        );
     }
 
     /**

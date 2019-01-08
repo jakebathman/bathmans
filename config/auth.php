@@ -99,4 +99,5 @@ return [
         ],
     ],
 
+    'registration_whitelist' => env('REG_EMAIL_WHITELIST')
 ];
