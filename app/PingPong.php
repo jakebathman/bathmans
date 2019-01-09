@@ -46,23 +46,27 @@ class PingPong extends Model
         foreach ($groups as $group) {
             $earliest = Carbon::now('UTC')->subMinutes($group)->format('Y-m-d H:i:s');
 
-            $data = self::where('created_at', '>=', $earliest)->get();
+            $dataInternal = self::where('created_at', '>=', $earliest)->internal()->get();
+            $dataExternal = self::where('created_at', '>=', $earliest)->external()->get();
 
-            $successInternal = self::internal()->successful()->count();
-            $successExternal = self::external()->successful()->count();
+            $successInternal = $dataInternal->where('is_successful', 1)->count();
+            $successExternal = $dataExternal->where('is_successful', 1)->count();
 
-            $countInternal = self::internal()->successful()->count();
-            $countExternal = self::external()->successful()->count();
+            $countInternal = $dataInternal->count();
+            $countExternal = $dataExternal->count();
+
+            $uptimeInternal = $countInternal == 0 ? 0 : 100 * ($successInternal / $countInternal);
+            $uptimeExternal = $countExternal == 0 ? 0 : 100 * ($successExternal / $countExternal);
 
             $summary[] = [
                 'group' => $group,
                 'earliest_item' => $earliest,
-                'count' => $data->count(),
+                'count' => $countInternal + $countExternal,
                 'count_internal' => $countInternal,
                 'count_external' => $countExternal,
-                'uptime_internal' => 100 * ($successInternal / $countInternal),
-                'uptime_external' => 100 * ($successExternal / $countExternal),
-                'uptime' => 100 * ((($successInternal / $countInternal) + ($successExternal / $countExternal)) / 2),
+                'uptime_internal' => $uptimeInternal,
+                'uptime_external' => $uptimeExternal,
+                'uptime' => ($uptimeInternal + $uptimeExternal) / 2,
             ];
         }
 
