@@ -16,7 +16,6 @@ class CreatePingPongSummariesTable extends Migration
         Schema::create('ping_pong_summaries', function (Blueprint $table) {
             $table->integer('group')->unsigned();
             $table->integer('count')->unsigned()->nullable()->default(0);
-            $table->string('source', 100);
             $table->string('uptime')->nullable()->default(0);
             $table->string('uptime_internal', 100)->nullable();
             $table->string('uptime_external', 100)->nullable();
