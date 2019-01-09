@@ -15,6 +15,7 @@ Route::get('/', function () {
   return view('home');
 })->name('home');
 
+Route::get('ping', 'Pong');
 
 Route::get('internet', 'InternetStatusController@index')->middleware('auth');
 

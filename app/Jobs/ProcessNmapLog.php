@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use App\PingPongSummary;
 
 class ProcessNmapLog implements ShouldQueue
 {
@@ -80,6 +81,12 @@ class ProcessNmapLog implements ShouldQueue
             }
             $r['uptimePct'] = round(($r['up'] / $r['num']) * 100, 2);
             $results[$g] = $r;
+        }
+
+        // Store summary groups in ping_pong_summaries
+        $summaries = PingPong::getSummary();
+        foreach ($summaries as $summary) {
+            PingPongSummary::create($summary);
         }
         dump($results);
     }
