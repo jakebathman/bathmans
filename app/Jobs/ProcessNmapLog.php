@@ -75,11 +75,8 @@ class ProcessNmapLog implements ShouldQueue
                     $p = PingPong::firstOrNew([
                         'created_at' => $ts,
                     ]);
-                    $p->update([
-                        'created_at' => $ts,
-                        'source' => 'external',
-                        'is_successful' => $parts[2],
-                    ]);
+                    $p->source = 'external';
+                    $p->is_successful = $parts[2];
                     $p->save();
                 }
             }
