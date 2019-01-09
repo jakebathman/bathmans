@@ -60,7 +60,7 @@ class PingPong extends Model
                 'count' => $data->count(),
                 'uptime_internal' => 100 * ($successInternal / $countInternal),
                 'uptime_external' => 100 * ($successExternal / $countExternal),
-                'uptime' => (50),
+                'uptime' => 100 * ((($successInternal / $countInternal) + ($successExternal / $countExternal)) / 2),
             ];
         }
 
