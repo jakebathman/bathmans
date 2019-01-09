@@ -58,6 +58,8 @@ class PingPong extends Model
                 'group' => $group,
                 'earliest_item' => $earliest,
                 'count' => $data->count(),
+                'count_internal' => $countInternal,
+                'count_external' => $countExternal,
                 'uptime_internal' => 100 * ($successInternal / $countInternal),
                 'uptime_external' => 100 * ($successExternal / $countExternal),
                 'uptime' => 100 * ((($successInternal / $countInternal) + ($successExternal / $countExternal)) / 2),
