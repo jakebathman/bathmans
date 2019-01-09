@@ -86,7 +86,9 @@ class ProcessNmapLog implements ShouldQueue
         // Store summary groups in ping_pong_summaries
         $summaries = PingPong::getSummary();
         foreach ($summaries as $summary) {
-            PingPongSummary::create($summary);
+            $s = PingPongSummary::firstOrCreate(['group' => $summary['group']]);
+            $s->update($summary);
+            $s->save();
         }
         dump($results);
     }
