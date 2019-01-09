@@ -11,6 +11,6 @@ class PingPongSummary extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'earliest' => 'datetime:Y-m-d H:i:s',
+        'earliest_item' => 'datetime:Y-m-d H:i:s',
     ];
 }
