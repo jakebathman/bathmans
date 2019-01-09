@@ -72,11 +72,15 @@ class ProcessNmapLog implements ShouldQueue
                     }
 
                     // Log to the database
-                    PingPong::updateOrCreate([
+                    $p = PingPong::firstOrNew([
+                        'created_at' => $ts,
+                    ]);
+                    $p->update([
                         'created_at' => $ts,
                         'source' => 'external',
                         'is_successful' => $parts[2],
                     ]);
+                    $p->save();
                 }
             }
             $r['uptimePct'] = round(($r['up'] / $r['num']) * 100, 2);
