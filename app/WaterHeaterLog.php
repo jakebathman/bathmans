@@ -11,4 +11,8 @@ class WaterHeaterLog extends Model
         'notes',
         'logged_at',
     ];
+
+    protected $casts = [
+        'is_on' => 'boolean',
+    ];
 }
