@@ -99,5 +99,8 @@ return [
         ],
     ],
 
-    'registration_whitelist' => env('REG_EMAIL_WHITELIST')
+    'registration_whitelist' => env('REG_EMAIL_WHITELIST'),
+
+    'api_token' => env('API_TOKEN'),
+
 ];
