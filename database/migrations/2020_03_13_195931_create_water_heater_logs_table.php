@@ -11,6 +11,7 @@ class CreateWaterHeaterLogsTable extends Migration
         Schema::create('water_heater_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('is_on')->unsigned();
+            $table->integer('noticed_when_using')->unsigned()->nullable()->default(0);
             $table->text('notes')->nullable()->default(null);
             $table->dateTime('logged_at');
             $table->timestamps();

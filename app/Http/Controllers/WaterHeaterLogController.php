@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\WaterHeaterLog;
+use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Http\Request;
 
 class WaterHeaterLogController extends Controller
@@ -21,6 +23,7 @@ class WaterHeaterLogController extends Controller
         try {
             $log = WaterHeaterLog::create([
                 'is_on' => (int)request('is_on'),
+                'noticed_when_using' => (int)request('noticed_when_using'),
                 'logged_at' => request('logged_at'),
                 'notes' => request('notes'),
             ]);
@@ -47,7 +50,7 @@ class WaterHeaterLogController extends Controller
         $logs = WaterHeaterLog::orderBy('logged_at', 'DESC')->get();
 
         $continue = true;
-        return $logs->filter(function ($log) use (&$continue) {
+        $streakStart = $logs->filter(function ($log) use (&$continue) {
             if (! $continue) {
                 // Reject this log, we've reached the last usable one already
                 return false;
@@ -60,7 +63,12 @@ class WaterHeaterLogController extends Controller
 
             return true;
         })
-        ->count();
+        ->last();
+
+        if ($streakStart) {
+            // Return current streak time
+            return Carbon::parse($streakStart->logged_at, new DateTimeZone('America/Chicago'))->diffForHumans(null, true);
+        }
     }
 
     public function show(WaterHeaterLog $waterHeaterLog)
